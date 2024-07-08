@@ -69,7 +69,9 @@ public class AlarmService {
 		
 		if (alarmList.size() > 0) {
 			for (Alarm entity : alarmList) {
+				
 				AlarmListResponseDto dto = new AlarmListResponseDto();
+				dto.setUserId(entity.toDto().getUserId());
 				dto.setAlarmId(entity.toDto().getAlarmId());
 				dto.setMeesage(entity.toDto().getMessage());
 				dto.setCreatedAt(entity.getCreatedAt());
@@ -89,6 +91,8 @@ public class AlarmService {
 			// Object mapper로 변환 불가능한 경우 처리
 			e.printStackTrace();
 		}
+		System.out.println("★ topic ★ : " + topic);
+		System.out.println("★ 내용물 ★ : " + mapper);
 		kafkaTemplate.send(topic, mapper);
 	}
 
