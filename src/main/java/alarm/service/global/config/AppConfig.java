@@ -1,4 +1,4 @@
-package alarm.service.config;
+package alarm.service.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

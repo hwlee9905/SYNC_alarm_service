@@ -2,7 +2,6 @@ package alarm.service.entity;
 
 import java.util.UUID;
 
-import org.antlr.v4.runtime.misc.NotNull;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -15,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 public class Alarm extends BaseEntity{
 	@Id 
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,10 +30,10 @@ public class Alarm extends BaseEntity{
 	@JdbcTypeCode(SqlTypes.BINARY)
 	private UUID alarmId;
 	
-	@Column(name = "user_id", nullable = false)
+	@Column(name = "user_id", columnDefinition = "BIGINT UNSIGNED", nullable = false)
 	private long userId;
 	
-	@Column(name = "message")
+	@Column(name = "message", length = 255, nullable = false)
 	private String message;
 
 	public AlarmDto toDto() {
