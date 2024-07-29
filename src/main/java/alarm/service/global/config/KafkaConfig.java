@@ -1,4 +1,4 @@
-package alarm.service.config;
+package alarm.service.global.config;
 
 import java.util.HashMap;
 import java.util.Map;

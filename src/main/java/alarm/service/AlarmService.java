@@ -2,23 +2,20 @@ package alarm.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import alarm.service.dto.req.AlarmListRequestDto;
-import alarm.service.dto.res.AlarmListResponseDto;
+import alarm.service.dto.res.ResAlarmHistory;
 import alarm.service.entity.Alarm;
+import alarm.service.global.SuccessResponse;
 import alarm.service.repository.AlarmRepository;
-import alarm.service.utils.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -54,36 +51,25 @@ public class AlarmService {
 //		messagingTemplate.convertAndSend("/topic/user/" + url, message);
 //	}
 	
-	@KafkaListener(topics = "reqAlarmList", containerFactory = "kafkaListenerContainerFactory")
-	public void getAlarmList(String message) {
-		List<AlarmListResponseDto> result = new ArrayList<>();
-		AlarmListRequestDto body = null;
-		try {
-			body = objectMapper.readValue(message, AlarmListRequestDto.class);
-		} catch (Exception e) {
-			// Object mapper로 변환 불가능한 경우 처리
-			e.printStackTrace();
-		}
-		
-		List<Alarm> alarmList = alarmRepository.findByUserId(body.getUserId());
-		
+	public SuccessResponse getAlarmHistory(long userId) {
+		List<ResAlarmHistory> result = new ArrayList<>();
+		List<Alarm> alarmList = alarmRepository.findByUserId(userId);
 		if (alarmList.size() > 0) {
 			for (Alarm entity : alarmList) {
-				
-				AlarmListResponseDto dto = new AlarmListResponseDto();
-				dto.setUserId(entity.toDto().getUserId());
-				dto.setAlarmId(entity.toDto().getAlarmId());
-				dto.setMeesage(entity.toDto().getMessage());
-				dto.setCreatedAt(entity.getCreatedAt());
-				
+				ResAlarmHistory dto = ResAlarmHistory
+						.builder()
+						.alarmId(entity.getAlarmId())
+						.message(entity.getMessage())
+						.createdAt(entity.getCreatedAt())
+						.updatedAt(entity.getUpdatedAt())
+						.build();
 				result.add(dto);
 			}
 		}
-//		return ResponseMessage.builder().value(result).build();
-		sendResAlarm("resAlarmList", ResponseMessage.builder().value(result).build());
+		return SuccessResponse.builder().data(result).build();
 	}
 
-	public void sendResAlarm(String topic, ResponseMessage message) {
+	public void sendResAlarm(String topic, SuccessResponse message) {
 		String mapper = null;
 		try {
 			mapper = objectMapper.writeValueAsString(message);

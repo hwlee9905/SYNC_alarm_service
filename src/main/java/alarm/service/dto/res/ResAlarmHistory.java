@@ -3,12 +3,14 @@ package alarm.service.dto.res;
 import java.sql.Timestamp;
 import java.util.UUID;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class AlarmListResponseDto {
-	private Long userId;
+@Builder
+public class ResAlarmHistory {
 	private UUID alarmId;
-	private String meesage;
+	private String message;
 	private Timestamp createdAt;
+	private Timestamp updatedAt;
 }
